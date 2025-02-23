@@ -70,8 +70,9 @@ def scrape_wikipedia(wiki_url):
 
         return {
             "Title": title,
-            "Image": image_path if image_path else "Image not available",
-            "Summary": summary
+            "Image": image_url if image_path else "Image not available",
+            "Summary": summary,
+            "Link" : wiki_url
         }
 
     except Exception as e:

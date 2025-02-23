@@ -1,4 +1,4 @@
-from links import search_duckduckgo
+from link_maker import search_duckduckgo
 from scrappers.imdb import scrape_imdb
 from scrappers.wiki import scrape_wikipedia
 from scrappers.mdl import scrape_mydramalist

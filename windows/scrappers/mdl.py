@@ -72,8 +72,9 @@ def scrape_mydramalist(drama_url):
 
         return {
             "Title": title,
-            "Image": image_path if image_path else "Image not available",
-            "Summary": summary
+            "Image": image_url if image_path else "Image not available",
+            "Summary": summary,
+            "Link" : drama_url
         }
 
     except Exception as e:
