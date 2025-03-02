@@ -4,9 +4,15 @@ import requests
 from io import BytesIO
 import traceback
 
+import config
+
 def scrape_myanimelist(anime_url):
     if not anime_url:
-        return {"error": "MyAnimeList URL not found"}
+        config.RESULT['mal'] = {"error": "MyAnimeList URL not found"}
+
+    title = None
+    image_url = None
+    summary = None
 
     try:
         with sync_playwright() as p:
@@ -21,7 +27,7 @@ def scrape_myanimelist(anime_url):
                 try:
                     page.goto(anime_url, timeout=60000)
                 except PlaywrightTimeoutError:
-                    return {"error": "Page load timeout exceeded (60 seconds)"}
+                    config.RESULT['mal'] = {"error": "Page load timeout exceeded (60 seconds)"}
 
                 title = page.title().split(' - ')[0] if page.title() else "Title not found"
 
@@ -45,7 +51,7 @@ def scrape_myanimelist(anime_url):
 
             except Exception as e:
                 print(f"Playwright error: {e}")
-                return {"error": f"Playwright error: {str(e)}"}
+                config.RESULT['mal'] = {"error": f"Playwright error: {str(e)}"}
 
         image_path = None
         if image_url:
@@ -68,7 +74,7 @@ def scrape_myanimelist(anime_url):
                 print(f"Invalid image format: {e}")
                 image_path = None
 
-        return {
+        config.RESULT['mal'] = {
             "Title": title,
             "Image": image_url if image_path else "Image not available",
             "Summary": summary,
@@ -78,4 +84,4 @@ def scrape_myanimelist(anime_url):
     except Exception as e:
         print(f"Unexpected error: {e}")
         traceback.print_exc()
-        return {"error": f"Unexpected error: {str(e)}"}
+        config.RESULT['mal'] = {"error": f"Unexpected error: {str(e)}"}

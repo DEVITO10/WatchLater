@@ -4,10 +4,15 @@ import requests
 from io import BytesIO
 import traceback
 import json
+import config
 
 def scrape_imdb(imdb_url):
     if not imdb_url:
-        return {"error": "IMDb URL not found"}
+        config.RESULT['imdb'] = {"error": "IMDb URL not found"}
+
+    title = None
+    image_url = None
+    summary = None
 
     try:
         with sync_playwright() as p:
@@ -22,7 +27,7 @@ def scrape_imdb(imdb_url):
                 try:
                     page.goto(imdb_url, timeout=60000)
                 except PlaywrightTimeoutError:
-                    return {"error": "Page load timeout exceeded (60 seconds)"}
+                    config.RESULT['imdb'] = {"error": "Page load timeout exceeded (60 seconds)"}
                 
                 json_data = json.loads(page.locator('script[type="application/ld+json"]').first.inner_text())
 
@@ -48,7 +53,7 @@ def scrape_imdb(imdb_url):
 
             except Exception as e:
                 print(f"Playwright error: {e}")
-                return {"error": f"Playwright error: {str(e)}"}
+                config.RESULT['imdb'] = {"error": f"Playwright error: {str(e)}"}
 
         image_path = None
         if image_url:
@@ -71,7 +76,7 @@ def scrape_imdb(imdb_url):
                 print(f"Invalid image format: {e}")
                 image_path = None
 
-        return {
+        config.RESULT['imdb'] = {
             "Title": title,
             "Image": image_url if image_path else "Image not available",
             "Summary": summary,
@@ -81,4 +86,4 @@ def scrape_imdb(imdb_url):
     except Exception as e:
         print(f"Unexpected error: {e}")
         traceback.print_exc()
-        return {"error": f"Unexpected error: {str(e)}"}
+        config.RESULT['imdb'] = {"error": f"Unexpected error: {str(e)}"}

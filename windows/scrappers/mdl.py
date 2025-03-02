@@ -5,9 +5,15 @@ import requests
 from io import BytesIO
 import traceback
 
+import config
+
 def scrape_mydramalist(drama_url):
     if not drama_url:
-        return {"error": "MyDramaList URL not provided"}
+        config.RESULT['mdl'] = {"error": "MyDramaList URL not provided"}
+
+    title = None
+    image_url = None
+    summary = None
 
     try:
         with sync_playwright() as p:
@@ -23,7 +29,7 @@ def scrape_mydramalist(drama_url):
                 try:
                     page.goto(drama_url, timeout=60000)
                 except PlaywrightTimeoutError:
-                    return {"error": "Page load timeout exceeded (60 seconds)"}
+                    config.RESULT['mdl'] = {"error": "Page load timeout exceeded (60 seconds)"}
 
                 title = page.title().split(' - ')[0] if page.title() else "Title not found"
 
@@ -47,7 +53,7 @@ def scrape_mydramalist(drama_url):
 
             except Exception as e:
                 print(f"Playwright error: {e}")
-                return {"error": f"Playwright error: {str(e)}"}
+                config.RESULT['mdl'] = {"error": f"Playwright error: {str(e)}"}
 
         image_path = None
         if image_url:
@@ -70,7 +76,7 @@ def scrape_mydramalist(drama_url):
                 print(f"Invalid image format: {e}")
                 image_path = None
 
-        return {
+        config.RESULT['mdl'] = {
             "Title": title,
             "Image": image_url if image_path else "Image not available",
             "Summary": summary,
@@ -80,4 +86,4 @@ def scrape_mydramalist(drama_url):
     except Exception as e:
         print(f"Unexpected error: {e}")
         traceback.print_exc()
-        return {"error": f"Unexpected error: {str(e)}"}
+        config.RESULT['mdl'] = {"error": f"Unexpected error: {str(e)}"}

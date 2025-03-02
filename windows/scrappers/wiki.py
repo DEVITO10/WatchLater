@@ -4,9 +4,15 @@ import requests
 from io import BytesIO
 import traceback
 
+import config
+
 def scrape_wikipedia(wiki_url):
     if not wiki_url:
-        return {"error": "Wikipedia URL not found"}
+        config.RESULT['wiki'] = {"error": "Wikipedia URL not found"}
+
+    title = None
+    image_url = None
+    summary = None
 
     try:
         with sync_playwright() as p:
@@ -21,7 +27,7 @@ def scrape_wikipedia(wiki_url):
                 try:
                     page.goto(wiki_url, timeout=60000)
                 except PlaywrightTimeoutError:
-                    return {"error": "Page load timeout exceeded (60 seconds)"}
+                    config.RESULT['wiki'] = {"error": "Page load timeout exceeded (60 seconds)"}
 
                 title = page.title().split(' - ')[0] if page.title() else "Title not found"
 
@@ -45,7 +51,7 @@ def scrape_wikipedia(wiki_url):
 
             except Exception as e:
                 print(f"Playwright error: {e}")
-                return {"error": f"Playwright error: {str(e)}"}
+                config.RESULT['wiki'] = {"error": f"Playwright error: {str(e)}"}
 
         image_path = None
         if image_url:
@@ -68,7 +74,7 @@ def scrape_wikipedia(wiki_url):
                 print(f"Invalid image format: {e}")
                 image_path = None
 
-        return {
+        config.RESULT['wiki'] = {
             "Title": title,
             "Image": image_url if image_path else "Image not available",
             "Summary": summary,
@@ -78,4 +84,4 @@ def scrape_wikipedia(wiki_url):
     except Exception as e:
         print(f"Unexpected error: {e}")
         traceback.print_exc()
-        return {"error": f"Unexpected error: {str(e)}"}
+        config.RESULT['wiki'] = {"error": f"Unexpected error: {str(e)}"}
