@@ -154,13 +154,13 @@ class ToDoApp(QWidget):
 
         self.setLayout(layout)
 
-        self.popup = None  # Initialize popup variable
+        self.popup = None
 
     def show_search(self, width, height):
         if self.popup:
-            self.popup.close()  # Close existing popup before opening a new one
+            self.popup.close()
 
-        self.popup = SearchPopup(self, width=width, height=height)  # Create popup from external file
+        self.popup = SearchPopup(self, width=width, height=height)
         self.popup.show()
         
 
