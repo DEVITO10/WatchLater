@@ -31,6 +31,10 @@ class LoadingScreen(QWidget):
         self.gif_label = QLabel()
         self.gif_label.setFixedSize(size*2, size*2)
         self.gif_label.setAlignment(Qt.AlignCenter)
+        self.gif_label.setAttribute(Qt.WA_TranslucentBackground)
+        self.gif_label.setStyleSheet("""
+            background-color: rgba(0,0,0,0.9);
+        """)
 
         self.movie = QMovie("./icons/loading.gif")
         self.gif_label.setMovie(self.movie)
